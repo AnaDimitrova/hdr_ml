@@ -1,17 +1,20 @@
 
-Train_Data_Path = "/Users/aniki/Documents/ETH/ML/Project1/data/set_train/"
-Test_Data_Path = "/Users/aniki/Documents/ETH/ML/Project1/data/set_test/"
+import os
 
-#Train_Data_Path = "/Users/jr/Desktop/Machine Learning/Projects/data/set_train/"
-#Test_Data_Path = "/Users/jr/Desktop/Machine Learning/Projects/data/set_test/"
+if(not os.environ.has_key("ML_PATH")):
+	raise Exception("Make sure you create a global variable \"ML_PATH\" for your project location in your ~/.bash_profile.")
+#Enlistment_Location = "/Users/jr/Desktop/Machine Learning/"
+
+Enlistment_Location = os.environ['ML_PATH']
+
+Train_Data_Path = Enlistment_Location + "/data/set_train/"
+Test_Data_Path = Enlistment_Location + "/data/set_test/"
 
 File_Extension = ".nii"
 
-Train_Target_File_Path = "/Users/aniki/Documents/ETH/ML/Project1/targets.csv"
-Test_Target_File_Path = "/Users/aniki/Documents/ETH/ML/Project1/submission.csv"
+Train_Target_File_Path = Enlistment_Location + "targets.csv"
+Test_Target_File_Path = Enlistment_Location + "submission.csv"
 
-#Train_Target_File_Path = "/Users/jr/Desktop/Machine Learning/Projects/targets.csv"
-#Test_Target_File_Path = "/Users/jr/Desktop/Machine Learning/Projects/submission.csv"
 
 Level_Separation_X = 4
 Level_Separation_Y = 4
