@@ -5,86 +5,79 @@ from sklearn.linear_model import Ridge
 from sklearn.preprocessing import PolynomialFeatures
 from sklearn.pipeline import make_pipeline
 import matplotlib.pyplot as plt
+from sklearn import svm, metrics
+from sklearn.feature_selection import SelectKBest
+from sklearn.feature_selection import f_regression
 
 import ReadData as rd
 import Constants as const
 
-def calculateFeatureForX(imageData, threshold):
+def applyMask(imageData, mask):
 
-	#Take a slice (90 <= z <= 100)
-	aSlice = imageData[:, :, 90:100, 0]
+	#Remove background (perhaps unnecessary)
+	noBlack = imageData[:, :, :, 0][ mask ]
 
-	#Remove background
-	noBlack = aSlice[ np.where(aSlice>0) ]
+	return noBlack
 
-	#Count every with intensity higher than threshold
-	return ((noBlack > threshold).sum())
-
-def generateInputFor(path, numberOfCases, threshold):
-	input = np.empty(shape=(numberOfCases))
-
+def generateInputFor(path, numberOfCases, mask):
+	
 	#Read image files
 	data = rd.GetAllFiles(path)
 
-	for i in range(0,numberOfCases):
+	#Calculate mask to remove background from first input
+	if(mask == None):
+		mask = np.where(data[0].get_data()[:, :, :, 0]>0)
 
-		#Count every with intensity higher than threshold
-		input[i] = calculateFeatureForX(data[i].get_data(), threshold)
+	#Initial input (only first image)
+	input = applyMask(data[0].get_data(), mask)
 
-	#Reshape
-	return input.reshape((numberOfCases, 1))
+	for i in range(1,numberOfCases):
 
+		print(i)
+		processedImage = applyMask(data[i].get_data(), mask)
 
-def plotRegressionVsActualData():
-	plt.scatter(input, output,  color='black')
+		#Every image becomes a row of the input matrix
+		input = np.vstack([input, processedImage])
 
-	x_plot = np.linspace(np.amin(input), np.amax(input), 100)[:, np.newaxis]
-	plt.plot(x_plot, model.predict(x_plot), color='blue',
-         linewidth=3)
-
-	plt.xticks(())
-	plt.yticks(())
-	plt.show()
+	return {'input': input, 'mask': mask}
 
 
-#Initial bogus values
-minMeanSquaredError = 999
-bestThreshold = 0
+#LEARN
 
-for threshold in range (300, 701, 10):
+#Compute input array and a mask to eliminate background (probable unnecessary given the statistical tests)
+result = generateInputFor(const.Train_Data_Path, const.TRAIN_SAMPLES, None)
+input=result['input']
+mask=result['mask']
 
-	input = generateInputFor(const.Train_Data_Path, const.TRAIN_SAMPLES, threshold)
+#Get training output
+output = np.genfromtxt(const.Train_Target_File_Path, delimiter='\n')
 
-	#Get training output
-	output = np.genfromtxt(const.Train_Target_File_Path, delimiter='\n')
+#Pick only the best k features and adjust model
+ps = SelectKBest(f_regression, k=500000).fit(input, output)
+input = ps.transform(input)
 
-	#Quadratic polynomial fit
-	model = make_pipeline(PolynomialFeatures(2), Ridge())
-	model.fit(input, output)
+reg = linear_model.RidgeCV(normalize=True, cv=20)
+reg.fit(input, output)
 
-	#Linear Regression
-	#model = linear_model.LinearRegression()
-	#model.fit(input, output)
+#Print mean squared error
+#	meanSquaredError = np.mean((model.predict(input) - output) ** 2)
+#	print("Mean squared error: %.2f"
+#	      % meanSquaredError )
 
-	meanSquaredError = np.mean((model.predict(input) - output) ** 2)
-	print("Mean squared error: %.2f"
-	      % meanSquaredError )
-
-	if(meanSquaredError < minMeanSquaredError):
-		bestThreshold = threshold
-
-plotRegressionVsActualData()
 
 #PREDICT
 
-#Generate test input
-testInput = generateInputFor(const.Test_Data_Path, const.TEST_SAMPLES, bestThreshold)
+##Generate test input
+testInput = generateInputFor(const.Test_Data_Path, const.TEST_SAMPLES, mask)['input']
+testInputTransformed = ps.transform(testInput)
 
-#Run against model
-predictions = np.rint(model.predict(testInput))
+#Predict and round to integer
+predictions = np.rint(reg.predict(testInputTransformed))
 
-#Over 18 age limit
+#Apply over 18 age limit
 predictions = np.maximum(predictions, 18)
+
+#OUTPUT
 
 #Format and save predictions as CSV
 predictions = np.c_[np.arange(1,139), predictions]
