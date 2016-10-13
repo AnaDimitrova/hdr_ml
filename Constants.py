@@ -23,4 +23,4 @@ TRAIN_SAMPLES = 278
 TEST_SAMPLES = 138
 
 Cross_Validation_Sets_Number = 20
-Number_Of_Features = 500000
+Number_Of_Features = 400000

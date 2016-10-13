@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 from sklearn import svm, metrics
 from sklearn.feature_selection import SelectKBest
 from sklearn.feature_selection import f_regression
+from sklearn.ensemble import BaggingRegressor
 
 import ReadData as rd
 import Constants as const
@@ -53,10 +54,11 @@ mask=result['mask']
 output = np.genfromtxt(const.Train_Target_File_Path, delimiter='\n')
 
 #Pick only the best k features and adjust model
-ps = SelectKBest(f_regression, k=500000).fit(input, output)
+ps = SelectKBest(f_regression, k=const.Number_Of_Features).fit(input, output)
 input = ps.transform(input)
 
-reg = linear_model.RidgeCV(normalize=True, cv=20)
+reg = linear_model.RidgeCV(normalize=True)
+#reg = BaggingRegressor(linear_model.RidgeCV(normalize=True), max_features=0.04)
 reg.fit(input, output)
 
 #Print mean squared error
