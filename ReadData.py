@@ -19,7 +19,7 @@ def GetAllFiles(dataPath = const.Test_Data_Path):
 		img = nib.load(path)
 		loadedFiles.append(img)
 
-		print(path)
+		#print(path)
 
 	return loadedFiles
 
