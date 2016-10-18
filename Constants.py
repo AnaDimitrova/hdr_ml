@@ -1,7 +1,7 @@
 
 import os
 
-if(not os.environ.has_key("ML_PATH")):
+if(not "ML_PATH" in os.environ):
 	raise Exception("Make sure you create a global variable \"ML_PATH\" for your project location in your ~/.bash_profile.")
 #Enlistment_Location = "/Users/jr/Desktop/Machine Learning/"
 
