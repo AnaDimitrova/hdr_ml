@@ -1,14 +1,22 @@
 import nibabel
 import numpy as np
 from sklearn import datasets, linear_model
-from sklearn.linear_model import Ridge
+from sklearn.linear_model import Ridge, BayesianRidge
 from sklearn.preprocessing import PolynomialFeatures
 from sklearn.pipeline import make_pipeline
 import matplotlib.pyplot as plt
 from sklearn import svm, metrics
 from sklearn.feature_selection import SelectKBest
-from sklearn.feature_selection import f_regression
+from sklearn.feature_selection import f_regression, mutual_info_regression
 from sklearn.ensemble import BaggingRegressor
+from sklearn.ensemble import AdaBoostRegressor
+from sklearn.tree import DecisionTreeRegressor
+from sklearn.model_selection import GridSearchCV
+from sklearn.svm import SVR
+from sklearn.externals import joblib
+from sklearn.neighbors import KNeighborsRegressor
+import os
+from sklearn.model_selection import KFold
 
 import ReadData as rd
 import Constants as const
@@ -40,37 +48,67 @@ def generateInputFor(path, numberOfCases, mask):
 		#Every image becomes a row of the input matrix
 		input = np.vstack([input, processedImage])
 
+	
+
 	return {'input': input, 'mask': mask}
 
 
 #LEARN
-
-#Compute input array and a mask to eliminate background (probable unnecessary given the statistical tests)
-result = generateInputFor(const.Train_Data_Path, const.TRAIN_SAMPLES, None)
-input=result['input']
-mask=result['mask']
+print("Starting train input data read...")
+if  not(os.path.isfile('input.pkl')):
+	#Compute input array and a mask to eliminate background (probable unnecessary given the statistical tests)
+	result = generateInputFor(const.Train_Data_Path, const.TRAIN_SAMPLES, None)
+	input=result['input']
+	mask=result['mask']
+	joblib.dump(input, 'input.pkl')
+	joblib.dump(mask, 'mask.pkl')
+else:
+	print("Using cached train input data...")
+	input = joblib.load('input.pkl') 
+	mask = joblib.load('mask.pkl') 
+print("Finished reading train input data")
 
 #Get training output
 output = np.genfromtxt(const.Train_Target_File_Path, delimiter='\n')
 
 #Pick only the best k features and adjust model
-ps = SelectKBest(f_regression, k=const.Number_Of_Features).fit(input, output)
+print("Selecting best features...")
+if  not(os.path.isfile('feature_selection.pkl')):
+	ps = SelectKBest(f_regression, k=const.Number_Of_Features).fit(input, output)
+	joblib.dump(ps, 'feature_selection.pkl')
+else:
+	print("Using cached features...")
+	ps = joblib.load('feature_selection.pkl') 
+print("Best features selected")
+
 input = ps.transform(input)
 
-reg = linear_model.RidgeCV(normalize=True)
-#reg = BaggingRegressor(linear_model.RidgeCV(normalize=True), max_features=0.04)
+print("Fitting model...")
+reg = linear_model.RidgeCV(normalize=True, cv=KFold(n_splits=10))
+#reg = linear_model.BayesianRidge(normalize=True)
+#reg = svm.SVR(epsilon=0.5, kernel='linear', C=100)
+
 reg.fit(input, output)
 
+print("Model fitted")
+
 #Print mean squared error
-#	meanSquaredError = np.mean((model.predict(input) - output) ** 2)
-#	print("Mean squared error: %.2f"
-#	      % meanSquaredError )
+meanSquaredError = np.mean((reg.predict(input) - output) ** 2)
+print("Mean squared error: %.2f"
+      % meanSquaredError )
 
 
 #PREDICT
+print("Starting test input data read...")
+if  not(os.path.isfile('testInput.pkl')):
+	##Generate test input
+	testInput = generateInputFor(const.Test_Data_Path, const.TEST_SAMPLES, mask)['input']
+	joblib.dump(testInput, 'testInput.pkl')
+else:
+	print("Using cached test input data...")
+	testInput = joblib.load('testInput.pkl') 
+print("Finished reading train input data")
 
-##Generate test input
-testInput = generateInputFor(const.Test_Data_Path, const.TEST_SAMPLES, mask)['input']
 testInputTransformed = ps.transform(testInput)
 
 #Predict and round to integer
