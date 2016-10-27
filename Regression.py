@@ -48,8 +48,6 @@ def generateInputFor(path, numberOfCases, mask):
 		#Every image becomes a row of the input matrix
 		input = np.vstack([input, processedImage])
 
-	
-
 	return {'input': input, 'mask': mask}
 
 
@@ -84,7 +82,7 @@ print("Best features selected")
 input = ps.transform(input)
 
 print("Fitting model...")
-reg = linear_model.RidgeCV(normalize=True, cv=KFold(n_splits=10))
+reg = linear_model.RidgeCV(normalize=True, cv=KFold(n_splits=const.Cross_Validation_Sets_Number))
 #reg = linear_model.BayesianRidge(normalize=True)
 #reg = svm.SVR(epsilon=0.5, kernel='linear', C=100)
 

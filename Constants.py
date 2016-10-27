@@ -24,5 +24,5 @@ Length_Y = 176
 TRAIN_SAMPLES = 278
 TEST_SAMPLES = 138
 
-Cross_Validation_Sets_Number = 20
-Number_Of_Features = 400000
+Cross_Validation_Sets_Number = 10
+Number_Of_Features = 355000
