@@ -29,8 +29,8 @@ ax[2].hist(improvedOutput, 50, normed=1, facecolor='blue', alpha=0.75)
 plt.subplots_adjust(left=0.15)
 #plt.show()
 
-
 improvedOutput = np.maximum(improvedOutput, 18)
 improvedOutput = np.c_[np.arange(1,139), np.rint(improvedOutput)]
 print(improvedOutput)
-np.savetxt("./submissionExperimental.csv", improvedOutput, delimiter=",", fmt="%i", header="ID,Prediction", comments="")
+np.savetxt("./submissionPostProcessing.csv", improvedOutput, 
+	delimiter=",", fmt="%i,%f", header="ID,Prediction", comments="")
