@@ -24,6 +24,6 @@ The number of features that turned out to be most efficient end up being quite b
 The ridge regression is executed with combination with Leave-One-Out cross-validation. Here we experimented with different types of cross validations, however again the Leave-One-Out produced best results.
 
 4. Postprocessing.
-As a post processing step we approximated our results to the initial input set to get similar age distribution. 
+As a post processing step we approximated our results to the initial input set to get similar age distribution. This step is randomizing and can produce different results after each execution.
 
 
