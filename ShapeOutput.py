@@ -1,8 +1,10 @@
 import numpy as np
-import Constants as const
+import matplotlib.pyplot as plt
+
 from sklearn.neighbors.kde import KernelDensity
 from sklearn.grid_search import GridSearchCV
-import matplotlib.pyplot as plt
+
+import Constants as const
 
 output = np.genfromtxt(const.Train_Target_File_Path, delimiter='\n').reshape(-1, 1)
 myOutput = np.genfromtxt(const.Test_Target_File_Path, delimiter=',')[1:, 1].reshape(-1, 1)

@@ -1,123 +1,69 @@
-import nibabel
-import numpy as np
-from sklearn import datasets, linear_model
-from sklearn.linear_model import Ridge, BayesianRidge
-from sklearn.preprocessing import PolynomialFeatures
-from sklearn.pipeline import make_pipeline
-import matplotlib.pyplot as plt
-from sklearn import svm, metrics
-from sklearn.feature_selection import SelectKBest
-from sklearn.feature_selection import f_regression, mutual_info_regression
-from sklearn.ensemble import BaggingRegressor
-from sklearn.ensemble import AdaBoostRegressor
-from sklearn.tree import DecisionTreeRegressor
-from sklearn.model_selection import GridSearchCV
-from sklearn.svm import SVR
-from sklearn.externals import joblib
-from sklearn.neighbors import KNeighborsRegressor
 import os
-from sklearn.model_selection import KFold
+import numpy as np
+
+from sklearn.linear_model import RidgeCV
+from sklearn.feature_selection import SelectKBest
+from sklearn.feature_selection import f_regression
 
 import ReadData as rd
 import Constants as const
+import ProcessData as pd
 
-def applyMask(imageData, mask):
-
-	#Remove background (perhaps unnecessary)
-	noBlack = imageData[:, :, :, 0][ mask ]
-
-	return noBlack
-
-def generateInputFor(path, numberOfCases, mask):
-	
-	#Read image files
-	data = rd.GetAllFiles(path)
-
-	#Calculate mask to remove background from first input
-	if(mask == None):
-		mask = np.where(data[0].get_data()[:, :, :, 0]>0)
-
-	#Initial input (only first image)
-	input = applyMask(data[0].get_data(), mask)
-
-	for i in range(1,numberOfCases):
-
-		print(i)
-		processedImage = applyMask(data[i].get_data(), mask)
-
-		#Every image becomes a row of the input matrix
-		input = np.vstack([input, processedImage])
-
-	return {'input': input, 'mask': mask}
-
-
-#LEARN
-print("Starting train input data read...")
-if  not(os.path.isfile('input.pkl')):
-	#Compute input array and a mask to eliminate background (probable unnecessary given the statistical tests)
-	result = generateInputFor(const.Train_Data_Path, const.TRAIN_SAMPLES, None)
-	input=result['input']
-	mask=result['mask']
-	joblib.dump(input, 'input.pkl')
-	joblib.dump(mask, 'mask.pkl')
-else:
-	print("Using cached train input data...")
-	input = joblib.load('input.pkl') 
-	mask = joblib.load('mask.pkl') 
-print("Finished reading train input data")
+# LEARN  
+print("1. Starting reading train input data and mask...")
+# Read image files
+data = rd.GetAllFiles(const.Train_Data_Path)
+mask = pd.usePrecomputedData(const.Preprocessed_Mask_File,
+	lambda data: pd.getMask(data),
+	data);
+input = pd.usePrecomputedData(const.Preprocessed_Train_Input_File,
+	lambda data, trainSamples, mask: transformInputForRegression(data, trainSamples, mask),
+	data, const.TRAIN_SAMPLES, mask);
+print("Finished reading train input data.")
 
 #Get training output
 output = np.genfromtxt(const.Train_Target_File_Path, delimiter='\n')
 
-#Pick only the best k features and adjust model
-print("Selecting best features...")
-if  not(os.path.isfile('feature_selection.pkl')):
-	ps = SelectKBest(f_regression, k=const.Number_Of_Features).fit(input, output)
-	joblib.dump(ps, 'feature_selection.pkl')
-else:
-	print("Using cached features...")
-	ps = joblib.load('feature_selection.pkl') 
-print("Best features selected")
+#Pick the best k features and adjust model
+print("2. Selecting best features...")
+ps = pd.usePrecomputedData(const.Preprocessed_Features_File,
+	lambda input, output: 
+	pd.SelectKBest(f_regression, k=const.Number_Of_Features).fit(input, output),
+	input, output)
+print("Best features selected.")
 
+# Transforming input
+print("3. Transforming input to selected features...")
 input = ps.transform(input)
+print("Finished transforming input")
 
-print("Fitting model...")
-reg = linear_model.RidgeCV(normalize=True, cv=KFold(n_splits=const.Cross_Validation_Sets_Number))
-#reg = linear_model.BayesianRidge(normalize=True)
-#reg = svm.SVR(epsilon=0.5, kernel='linear', C=100)
-
+print("4. Fitting model...")
+# Fit the linear mode with ridge regression including Leave-One-Out cross-validation
+reg = RidgeCV(normalize=True)
 reg.fit(input, output)
-
 print("Model fitted")
 
-#Print mean squared error
-meanSquaredError = np.mean((reg.predict(input) - output) ** 2)
-print("Mean squared error: %.2f"
-      % meanSquaredError )
-
-
-#PREDICT
-print("Starting test input data read...")
-if  not(os.path.isfile('testInput.pkl')):
-	##Generate test input
-	testInput = generateInputFor(const.Test_Data_Path, const.TEST_SAMPLES, mask)['input']
-	joblib.dump(testInput, 'testInput.pkl')
-else:
-	print("Using cached test input data...")
-	testInput = joblib.load('testInput.pkl') 
+# Read test input data
+print("5. Starting reading test input data...")
+testData = rd.GetAllFiles(const.Test_Data_Path)
+testInput = pd.usePrecomputedData(const.Preprocessed_Test_Input_File,
+	lambda data, testSamples, mask: pd.transformInputForRegression(data, testSamples, mask),
+	testData, const.TEST_SAMPLES, mask)
+testInputTransformed = ps.transform(testInput)
 print("Finished reading train input data")
 
-testInputTransformed = ps.transform(testInput)
-
+print("6. Starting predicting test data...")
 #Predict and round to integer
-predictions = np.rint(reg.predict(testInputTransformed))
-
+predictions = reg.predict(testInputTransformed)
 #Apply over 18 age limit
 predictions = np.maximum(predictions, 18)
-
-#OUTPUT
+print("Finished predicting test data...")
 
 #Format and save predictions as CSV
-predictions = np.c_[np.arange(1,139), predictions]
-print(predictions)
-np.savetxt(const.Test_Target_File_Path, predictions, delimiter=",", fmt="%i", header="ID,Prediction", comments="")
+predictions = np.c_[np.arange(1,const.TEST_SAMPLES + 1), predictions]
+np.savetxt(const.Test_Target_File_Path, predictions, delimiter=",", fmt="%i,%f", header="ID,Prediction", comments="")
+#print (predictions)
+print ("7. Result printed at '%s'." %(const.Test_Target_File_Path))
+
+
+
