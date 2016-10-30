@@ -25,3 +25,7 @@ The ridge regression is executed in combination with s Leave-One-Out cross-valid
 
 4. Postprocessing
 As a post-processing step, we used our prior knowledge of the distribution of the training set's ages to improve the precision of our results by adapting it lightly to get a similar age distribution. This step is randomizing since it draws samples randomly from the original distribution and, therefore, can produce different results after each execution.
+Note: The postprocessing step is not part of predict_final.py as we wanted to include only the deterministic part of our processing in the script. We did that to improving separately the deterministic algorithm and then once we found the best approach we would apply the postprocessing. It however can be found in ShapeOutput.py.
+
+
+
