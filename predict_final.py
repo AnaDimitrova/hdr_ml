@@ -17,7 +17,7 @@ mask = pd.usePrecomputedData(const.Preprocessed_Mask_File,
 	lambda data: pd.getMask(data),
 	data);
 input = pd.usePrecomputedData(const.Preprocessed_Train_Input_File,
-	lambda data, trainSamples, mask: transformInputForRegression(data, trainSamples, mask),
+	lambda data, trainSamples, mask: pd.transformInputForRegression(data, trainSamples, mask),
 	data, const.TRAIN_SAMPLES, mask);
 print("Finished reading train input data.")
 
@@ -28,7 +28,7 @@ output = np.genfromtxt(const.Train_Target_File_Path, delimiter='\n')
 print("2. Selecting best features...")
 ps = pd.usePrecomputedData(const.Preprocessed_Features_File,
 	lambda input, output: 
-	pd.SelectKBest(f_regression, k=const.Number_Of_Features).fit(input, output),
+	SelectKBest(f_regression, k=const.Number_Of_Features).fit(input, output),
 	input, output)
 print("Best features selected.")
 

@@ -27,5 +27,12 @@ The ridge regression is executed in combination with s Leave-One-Out cross-valid
 As a post-processing step, we used our prior knowledge of the distribution of the training set's ages to improve the precision of our results by adapting it lightly to get a similar age distribution. This step is randomizing since it draws samples randomly from the original distribution and, therefore, can produce different results after each execution.
 Note: The postprocessing step is not part of predict_final.py as we wanted to include only the deterministic part of our processing in the script. We did that to improving separately the deterministic algorithm and then once we found the best approach we would apply the postprocessing. It however can be found in ShapeOutput.py.
 
+# Running the project
+1. Make sure you create a global variable \"ML_PATH\" for your project location in your ~/.bash_profile, or update Constants.py with the location you have unzipped the code.
+2. Make sure that you have the training and test data in a  "data" folder in the code directory, or update the Constants.py file with the location of the data on your machine. Same applies to targets.csv and submissions.csv
+
+
+
+
 
 

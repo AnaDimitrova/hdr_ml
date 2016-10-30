@@ -1,7 +1,8 @@
 import os
+import nibabel as nib
 import numpy as np
-from sklearn.externals import joblib
 
+from sklearn.externals import joblib
 import Constants as const
 
 # Apply a given mask to the image data
@@ -9,10 +10,10 @@ def applyMask(imageData, mask):
 	remainingData = imageData[:, :, :, 0][ mask ]
 	return remainingData
 
-# Get the mask that will be used to remove the black background of the brain image
-def getMaskToRemoveBlackBackground(imageData):
-	mask = np.where(imageData[:, :, :, 0]>0)
-	return mask
+# # Get the mask that will be used to remove the black background of the brain image
+# def getMaskToRemoveBlackBackground(imageData):
+# 	mask = np.where(imageData[:, :, :, 0]>0)
+# 	return mask
 
 # Calculate the squared error rate
 def calculateSquaredError(reg, input, output):
@@ -20,8 +21,11 @@ def calculateSquaredError(reg, input, output):
 	return meanSquaredError
 
 def usePrecomputedData(precomputedValuesPath, callFunction, *args):
+	if not(os.path.exists(const.Precomputed_Directory)):
+		os.makedirs(const.Precomputed_Directory)
+
 	if  not(os.path.isfile(precomputedValuesPath)):
-		result = callFunction()
+		result = callFunction(*args)
 		joblib.dump(result, precomputedValuesPath)
 	else:
 		print("Using cached features...(to compute again delete '%s')" 
@@ -49,4 +53,4 @@ def transformInputForRegression(data, numberOfCases, mask):
 
 # Build mask from the first file of a data set.
 def getMask(data):
-	return getMaskToRemoveBlackBackground(data[0].get_data());
+	return np.where(data[0].get_data()[:, :, :, 0]>0);
