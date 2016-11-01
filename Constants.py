@@ -36,6 +36,13 @@ File_Extension = ".nii"
 TRAIN_SAMPLES = 278
 TEST_SAMPLES = 138
 
+# Project 2 
+RESULT_MIN_VALUE = 0;
+RESULT_MAX_VALUE = 1;
+# Project 1 
+# RESULT_MIN_VALUE = 18;
+# RESULT_MAX_VALUE = 100;
+
 # Number was assembled based on comparison 
 # between squared error on the different feature number
 Number_Of_Features = 355000
