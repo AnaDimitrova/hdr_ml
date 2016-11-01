@@ -14,11 +14,13 @@ Enlistment_Location = os.environ['ML_PATH']
 
 Code_Location = Enlistment_Location + "/hdr_ml/"
 
-Train_Data_Path = Code_Location + "/data/set_train/"
-Test_Data_Path = Code_Location + "/data/set_test/"
+Data_Location = Code_Location + "/data 2/"
 
-Train_Target_File_Path = Code_Location + "targets.csv"
-Test_Target_File_Path = Code_Location + "submission.csv"
+Train_Data_Path = Data_Location + "/set_train/"
+Test_Data_Path = Data_Location + "/set_test/"
+
+Train_Target_File_Path = Data_Location + "targets.csv"
+Test_Target_File_Path = Data_Location + "submission.csv"
 
 ######################################################################	
 # 						END (important node)						 #
@@ -38,7 +40,7 @@ TEST_SAMPLES = 138
 # between squared error on the different feature number
 Number_Of_Features = 355000
 
-Precomputed_Directory = 'PrecomputedData'
+Precomputed_Directory = Data_Location + '/PrecomputedData/'
 Preprocessed_Train_Input_File = Precomputed_Directory + '/train_input.pkl'
 Preprocessed_Test_Input_File = Precomputed_Directory + '/test_input.pkl'
 Preprocessed_Mask_File = Precomputed_Directory + '/mask.pkl'

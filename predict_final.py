@@ -56,7 +56,7 @@ print("6. Starting predicting test data...")
 #Predict and round to integer
 predictions = reg.predict(testInputTransformed)
 #Apply over 18 age limit
-predictions = np.maximum(predictions, 18)
+# predictions = np.maximum(predictions, 18)
 print("Finished predicting test data...")
 
 #Format and save predictions as CSV
