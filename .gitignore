@@ -2,4 +2,4 @@
 ###################
 *.pyc
 *.pkl
-*.csv
+submission*.csv
