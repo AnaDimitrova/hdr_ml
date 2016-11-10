@@ -37,7 +37,7 @@ TRAIN_SAMPLES = 278
 TEST_SAMPLES = 138
 
 # Project 2 
-RESULT_MIN_VALUE = 0;
+RESULT_MIN_VALUE = 0.05;
 RESULT_MAX_VALUE = 1;
 # Project 1 
 # RESULT_MIN_VALUE = 18;
@@ -52,3 +52,4 @@ Preprocessed_Train_Input_File = Precomputed_Directory + '/train_input.pkl'
 Preprocessed_Test_Input_File = Precomputed_Directory + '/test_input.pkl'
 Preprocessed_Mask_File = Precomputed_Directory + '/mask.pkl'
 Preprocessed_Features_File = Precomputed_Directory + '/feature_selection.pkl'
+PCA_Analysis_File = Precomputed_Directory + '/pca_analysis.pkl'
