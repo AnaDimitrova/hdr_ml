@@ -68,7 +68,7 @@ def SplitIntoCubes(data):
 
 	return output;
 
-def ExtractFeaturesFromFile(data):
+def ExtractFeaturesFromFile(data, bins):
 	features = []
 
 	for cube in data:
@@ -76,11 +76,25 @@ def ExtractFeaturesFromFile(data):
 		features.append(mean(cube))
 		features.append(std(cube));
 		features.append(median(cube));
+		histogram = np.histogram(cube, bins=bins);
+		# Remove the black information
+		features.extend(histogram[0][1:]);
 
 	return features;
 	
+def BuildHistogramBins():
+	files = rd.GetFileNames(const.Precomputed_Train_Directory, 'pkl');
+	input = joblib.load(files[0]);
+	histogram = np.histogram(input[0], bins=100);
+	trimmedBins = []
+	for h in zip(histogram[0], histogram[1]):
+		# Remove outliers
+		if(h[0] >= 100):
+			trimmedBins.append(h[1])
 
-def ExtractFeaturesFromAllFiles(inputDirectory, outputFile, preprocess):
+	return trimmedBins;
+
+def ExtractFeaturesFromAllFiles(inputDirectory, outputFile, bins, preprocess):
 	if(not preprocess and not(os.path.isfile(outputFile))):
 		print(bcolors.WARNING + "Warning: No active frommets remain. Continue?" + bcolors.ENDC)
 
@@ -90,7 +104,7 @@ def ExtractFeaturesFromAllFiles(inputDirectory, outputFile, preprocess):
 		a = 0;
 		for file in files:
 			input = joblib.load(file);
-			features.append(ExtractFeaturesFromFile(input));
+			features.append(ExtractFeaturesFromFile(input, bins));
 			print (a)
 			a += 1
 
@@ -99,6 +113,7 @@ def ExtractFeaturesFromAllFiles(inputDirectory, outputFile, preprocess):
 		features = joblib.load(outputFile);
 	
 	return features;
+
 
 
 
