@@ -46,10 +46,16 @@ RESULT_MAX_VALUE = 1;
 # Number was assembled based on comparison 
 # between squared error on the different feature number
 Number_Of_Features = 355000
+Number_Of_Features_New = 27
 
 Precomputed_Directory = Data_Location + '/PrecomputedData/'
+Precomputed_Train_Directory = Precomputed_Directory + '/Train/'
+Precomputed_Test_Directory = Precomputed_Directory + '/Test/'
 Preprocessed_Train_Input_File = Precomputed_Directory + '/train_input.pkl'
 Preprocessed_Test_Input_File = Precomputed_Directory + '/test_input.pkl'
 Preprocessed_Mask_File = Precomputed_Directory + '/mask.pkl'
 Preprocessed_Features_File = Precomputed_Directory + '/feature_selection.pkl'
+Preprocessed_Train_Features_File = Precomputed_Directory + '/train_features.pkl'
+Preprocessed_Test_Features_File = Precomputed_Directory + '/test_feature.pkl'
+ç = Precomputed_Directory + '/feature_test_selection.pkl'
 PCA_Analysis_File = Precomputed_Directory + '/pca_analysis.pkl'
