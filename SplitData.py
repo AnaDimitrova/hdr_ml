@@ -30,7 +30,7 @@ def CropBlackArea(data):
 def ProcessFiles(filesLocation, outputDirectory, preprocess):
 	files = rd.GetFileNames(filesLocation);
 	if(not preprocess and len(files) == 0):
-		print(bcolors.WARNING + "Warning: No active frommets remain. Continue?" + bcolors.ENDC)
+		print(bcolors.WARNING + "Warning: You should first create the files by changing varibales Preprocess_Train_Files." + bcolors.ENDC)
 
 	if(preprocess):
 		files = rd.GetFileNames(filesLocation);
@@ -96,7 +96,7 @@ def BuildHistogramBins():
 
 def ExtractFeaturesFromAllFiles(inputDirectory, outputFile, bins, preprocess):
 	if(not preprocess and not(os.path.isfile(outputFile))):
-		print(bcolors.WARNING + "Warning: No active frommets remain. Continue?" + bcolors.ENDC)
+		print(bcolors.WARNING + "Warning: You should first create the files by changing varibales Preprocess_Train_Files" + bcolors.ENDC)
 
 	features = []
 	if(preprocess):

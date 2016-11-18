@@ -19,10 +19,21 @@ import ProcessData as pd
 import SplitData as sp
 
 
+#######################################################
+# 					Important!						  #		
+# The following variables control what you want to be #
+# processed and what not. The first time you run it,  #
+# make sure that they are all set to true. After that #
+# you can disable them. If you want to preprocess the #
+# actual features just set the property to true.	  #
+# Note: Preprocessing the features is actually a slow #
+# process so be mindful when you want to do that!	  #
+#######################################################
 Preprocess_Train_Files = False;
 Preprocess_Train_Features = False;
 Preprocess_Test_Files = False;
 Preprocess_Test_Features = False;
+#######################################################
 
 # LEARN  
 print("1. Starting reading train input data...")
