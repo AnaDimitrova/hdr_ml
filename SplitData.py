@@ -85,7 +85,7 @@ def ExtractFeaturesFromFile(data, bins):
 def BuildHistogramBins():
 	files = rd.GetFileNames(const.Precomputed_Train_Directory, 'pkl');
 	input = joblib.load(files[0]);
-	histogram = np.histogram(input[0], bins=100);
+	histogram = np.histogram(input[0], bins=1000);
 	trimmedBins = []
 	for h in zip(histogram[0], histogram[1]):
 		# Remove outliers
@@ -113,7 +113,6 @@ def ExtractFeaturesFromAllFiles(inputDirectory, outputFile, bins, preprocess):
 		features = joblib.load(outputFile);
 	
 	return features;
-
 
 
 

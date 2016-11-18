@@ -46,7 +46,7 @@ RESULT_MAX_VALUE = 1;
 # Number was assembled based on comparison 
 # between squared error on the different feature number
 Number_Of_Features = 355000
-Number_Of_Features_New = 25
+Number_Of_Features_New = 55
 
 Precomputed_Directory = Data_Location + '/PrecomputedData/'
 Precomputed_Train_Directory = Precomputed_Directory + '/Train/'

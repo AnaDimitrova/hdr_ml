@@ -48,10 +48,11 @@ print("Finished transforming input")
 
 print("5. Fitting model...")
 # Fit the linear mode with ridge regression including Leave-One-Out cross-validation
-reg = RidgeCV(normalize=True)
-weights = output.copy()
-weights[weights==0]=10
-reg.fit(input, output, weights)
+reg = LassoCV(normalize=True)
+# weights = output.copy()
+# weights[weights==0]=10
+reg.fit(input, output)
+
 print("Model fitted")
 
 # Check score
