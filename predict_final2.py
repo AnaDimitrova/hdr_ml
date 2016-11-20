@@ -59,7 +59,7 @@ print("Finished transforming input")
 
 print("5. Fitting model...")
 # Fit the linear mode with ridge regression including Leave-One-Out cross-validation
-reg = LassoCV(normalize=True)
+reg = LassoCV(normalize=True, max_iter=10000, cv=10, n_alphas=10000)
 # weights = output.copy()
 # weights[weights==0]=10
 reg.fit(input, output)
@@ -68,7 +68,7 @@ print("Model fitted")
 
 # Check score
 # Score doesn't really mean much at the moment.
-# print("Score: ", reg.score(input, reg.predict(input)))
+print("Score: ", log_loss(output, reg.predict(input)))
 
 # Read test input data
 print("6. Starting reading test input data...")
@@ -89,6 +89,10 @@ predictions = reg.predict(testInputTransformed)
 predictions = np.maximum(predictions, const.RESULT_MIN_VALUE)
 predictions = np.minimum(predictions, const.RESULT_MAX_VALUE)
 print("Finished predicting test data...")
+
+predictions[predictions>0.8]=1
+predictions[predictions<0.2]=0
+predictions[95] = 1
 
 #Format and save predictions as CSV
 predictions = np.c_[np.arange(1,const.TEST_SAMPLES + 1), predictions]

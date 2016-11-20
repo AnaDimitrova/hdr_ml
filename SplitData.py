@@ -72,10 +72,9 @@ def ExtractFeaturesFromFile(data, bins):
 	features = []
 
 	for cube in data:
-		cube = cube.tolist()
-		features.append(mean(cube))
-		features.append(std(cube));
-		features.append(median(cube));
+		features.append(np.mean(cube))
+		features.append(np.std(cube));
+		features.append(np.median(cube));
 		histogram = np.histogram(cube, bins=bins);
 		# Remove the black information
 		features.extend(histogram[0][1:]);
