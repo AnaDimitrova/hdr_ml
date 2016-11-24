@@ -10,15 +10,18 @@ import ReadData as rd
 import Constants as const
 import ProcessData as pd
 
+# Remove first and last few slices from each nii file as they contain mostly black dots.
 def RemoveMarginalSplits(data):
 	return data[const.SPLIT_MARGIN:len(data) - const.SPLIT_MARGIN];
 
+# Crop margin from each slice of a nii file, ot clean up data set.
 def CropBlackArea(data):
 	maxPixels1 = len(data[0]) - const.PIXELS_CROP_FROM_SIDE;
 	maxPixels2 = len(data[0][0]) - const.PIXELS_CROP_FROM_SIDE;
 	return data[:, const.PIXELS_CROP_FROM_SIDE:maxPixels1, const.PIXELS_CROP_FROM_SIDE:maxPixels2]
 
 
+# Process one by one the files for the all prediction to be able to be handles by a regular pc
 def ProcessFiles(filesLocation, outputDirectory, preprocess):
 	if not(os.path.exists(outputDirectory)):
 		os.makedirs(outputDirectory)
@@ -36,16 +39,7 @@ def ProcessFiles(filesLocation, outputDirectory, preprocess):
 			joblib.dump(croppedData, outputDirectory + str(a) + '.pkl');
 			a +=1 
 
-def CropDataFromFile(file):	
-	# Remove the splits of the files that are mostly black
-	data = RemoveMarginalSplits(file.get_data());
-	# Remove the black area of the sides of each slice
-	data = CropBlackArea(data);
-	# Split the data into cubes
-	output = SplitIntoCubes(data);
-	
-	return output
-
+# Split the data in each one of the nii files into cubes
 def SplitIntoCubes(data):
 	segmentSizeX = int(floor(len(data[0])/const.SEGMENT_COUNT_X));
 	segmentSizeY = int(floor(len(data[0][0])/const.SEGMENT_COUNT_Y));
@@ -63,6 +57,18 @@ def SplitIntoCubes(data):
 
 	return output;
 
+# General function to clean up a file from the background and split it into cubes
+def CropDataFromFile(file):	
+	# Remove the splits of the files that are mostly black
+	data = RemoveMarginalSplits(file.get_data());
+	# Remove the black area of the sides of each slice
+	data = CropBlackArea(data);
+	# Split the data into cubes
+	output = SplitIntoCubes(data);
+	
+	return output
+
+# Extract the features from each one of the files.
 def ExtractFeaturesFromFile(data, bins):
 	features = []
 
@@ -76,7 +82,8 @@ def ExtractFeaturesFromFile(data, bins):
 
 	return features;
 	
-def BuildHistogramBins():
+# Builds a set of histograms. Cleans up outliers so that we have the data somewhat uniformly distributed
+def BuildHistogramBins(): 
 	files = rd.GetFileNames(const.Precomputed_Train_Directory, 'pkl');
 	input = joblib.load(files[0]);
 	histogram = np.histogram(input[0], bins=const.NUMBER_OF_BINS);
@@ -88,6 +95,7 @@ def BuildHistogramBins():
 
 	return trimmedBins;
 
+# Extract features from each one of the files which have already been preprocessed.
 def ExtractFeaturesFromAllFiles(inputDirectory, outputFile, bins, preprocess):
 	if(not preprocess and not(os.path.isfile(outputFile))):
 		print(bcolors.WARNING + "Warning: You should first create the files by changing varibales Preprocess_Train_Files" + bcolors.ENDC)

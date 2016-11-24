@@ -37,8 +37,10 @@ TRAIN_SAMPLES = 278
 TEST_SAMPLES = 138
 
 # Project 2 
+# Make sure we don't have any 1s and 0s as results for the project.
 RESULT_MIN_VALUE = 0.01;
 RESULT_MAX_VALUE = 0.99;
+
 # Project 1 
 # RESULT_MIN_VALUE = 18;
 # RESULT_MAX_VALUE = 100;
@@ -56,8 +58,8 @@ NUMBER_OF_BINS = 1000
 
 # Number was assembled based on comparison 
 # between squared error on the different feature number
-Number_Of_Features = 355000
-Number_Of_Features_New = 60
+Number_Of_Features_Project1 = 355000
+Number_Of_Features_Project2 = 60
 
 Precomputed_Directory = Data_Location + '/PrecomputedData/'
 Precomputed_Train_Directory = Precomputed_Directory + '/Train/'
