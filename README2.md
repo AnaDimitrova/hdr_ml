@@ -30,4 +30,4 @@ We were able to get quite good results on the visible training set (0.21698) by 
 
 # Running the project
 1. Make sure you create a global variable \"ML_PATH\" for your project location in your ~/.bash_profile, or update Constants.py with the location you have unzipped the code.
-2. Make sure that you have the training and test data in a  "data" folder in the code directory, or update the Constants.py file with the location of the data on your machine. Same applies to targets.csv and submissions.csv
+2. Make sure that you have the training and test data in a  "data2" folder in the code directory, or update the Constants.py file with the location of the data on your machine. Same applies to targets.csv and submissions.csv
