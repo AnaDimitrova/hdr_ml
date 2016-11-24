@@ -29,10 +29,10 @@ import SplitData as sp
 # Note: Preprocessing the features is actually a slow #
 # process so be mindful when you want to do that!	  #
 #######################################################
-Preprocess_Train_Files = False;
-Preprocess_Train_Features = False;
-Preprocess_Test_Files = False;
-Preprocess_Test_Features = False;
+Preprocess_Train_Files = False
+Preprocess_Train_Features = False
+Preprocess_Test_Files = False
+Preprocess_Test_Features = False
 #######################################################
 
 # LEARN  
@@ -59,7 +59,7 @@ print("Finished transforming input")
 
 print("5. Fitting model...")
 # Fit the linear mode with ridge regression including Leave-One-Out cross-validation
-reg = LassoCV(normalize=True, max_iter=10000, cv=10, n_alphas=10000)
+reg = LassoCV(normalize=True, max_iter=10000, cv=20, n_alphas=10000)
 # weights = output.copy()
 # weights[weights==0]=10
 reg.fit(input, output)
@@ -89,10 +89,6 @@ predictions = reg.predict(testInputTransformed)
 predictions = np.maximum(predictions, const.RESULT_MIN_VALUE)
 predictions = np.minimum(predictions, const.RESULT_MAX_VALUE)
 print("Finished predicting test data...")
-
-predictions[predictions>0.8]=1
-predictions[predictions<0.2]=0
-predictions[95] = 1
 
 #Format and save predictions as CSV
 predictions = np.c_[np.arange(1,const.TEST_SAMPLES + 1), predictions]
