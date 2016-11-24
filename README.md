@@ -6,7 +6,25 @@ Ana Dimitrova (nana@student.ethz.ch)
 Ines Haymann (haymanni@student.ethz.ch)
 Jonathan Rotsztejn (rotsztej@student.ethz.ch)
 
-# Description
+
+# Description Project 2
+1. Data Preprocessing
+Learning from the experience shared from other teams after the first project we decided to clean up more our data and create a real set of features instead of relying mostly on SelectKBest.
+	-> Clean the "black" areas in the files in two ways:
+		1) For each nii file we have 206 different pictures. Approximately the first and last 30 of them have mostly black background and not much of the brain, so we filtered them out.
+		2) For each of the remaining 146 pictures, we cleaned up the corners of the data, removing a 40 pixel margin from the sides of the picture.
+	-> Split the data into cubes - We split the now clean from noise data into 9 equally sized cubes. 
+	-> Reading and processing of the data was still very time consuming, so we changed our approach to preprocess each one of the files individually and then keep only the cleaned up data in separate split files. This removed the constraint to be able to fit all the data into memory to run the project.
+
+2. Select K Features
+For each of the files and each of the cubes we extracted 2 sets of features:
+	1) The mean, standard deviation and median of the points in the cube
+	2) Histograms on the cubes. Two important points here, we aimed to have a reasonably partitioned bins where the difference in size wouldn't be too big. So we ended up with 1000 bins. Also we filtered any remaining black pixels from the histograms, as they don't add any value. That resulted was 999 bins.
+In total we created 9 * (3 + 999) ~ 9000  features. To select the best of them we used sklearn SelectKBest. To arrive at our most performant feature selection we tried selecting different amount of features but at 55 we achieved the best results.
+
+3. Training the model. We tried different algorithms but the best and most performant one was Lasso with cross validation with number of folds equal to 10. 
+
+# Description Project 1
 1. Data Preprocessing 
 The input data was in nii format. There are couple of major drawbacks we overcame:
 	-> Each nii image has some amount of data that is not relevant to the brain properties i.e. the background of the image. Each one of the files was preprocessed to exclude that data. For that purpose, a simple mask was created to clean the background data and make the images uniform.

@@ -10,24 +10,19 @@ import ReadData as rd
 import Constants as const
 import ProcessData as pd
 
-# TODO: Need to decide how many splits should we filter out
-SPLIT_MARGIN = 30;
-# TODO: Need to decide how many pixels do we crop from the sides of each split
-PIXELS_CROP_FROM_SIDE = 40;
-# TODO: Need to decide how many cubes do we want to split the data into
-SEGMENT_COUNT_X = 3
-SEGMENT_COUNT_Y = 3
-
 def RemoveMarginalSplits(data):
-	return data[SPLIT_MARGIN:len(data) - SPLIT_MARGIN];
+	return data[const.SPLIT_MARGIN:len(data) - const.SPLIT_MARGIN];
 
 def CropBlackArea(data):
-	maxPixels1 = len(data[0]) - PIXELS_CROP_FROM_SIDE;
-	maxPixels2 = len(data[0][0]) - PIXELS_CROP_FROM_SIDE;
-	return data[:,PIXELS_CROP_FROM_SIDE:maxPixels1,PIXELS_CROP_FROM_SIDE:maxPixels2]
+	maxPixels1 = len(data[0]) - const.PIXELS_CROP_FROM_SIDE;
+	maxPixels2 = len(data[0][0]) - const.PIXELS_CROP_FROM_SIDE;
+	return data[:, const.PIXELS_CROP_FROM_SIDE:maxPixels1, const.PIXELS_CROP_FROM_SIDE:maxPixels2]
 
 
 def ProcessFiles(filesLocation, outputDirectory, preprocess):
+	if not(os.path.exists(outputDirectory)):
+		os.makedirs(outputDirectory)
+
 	files = rd.GetFileNames(filesLocation);
 	if(not preprocess and len(files) == 0):
 		print(bcolors.WARNING + "Warning: You should first create the files by changing varibales Preprocess_Train_Files." + bcolors.ENDC)
@@ -52,8 +47,8 @@ def CropDataFromFile(file):
 	return output
 
 def SplitIntoCubes(data):
-	segmentSizeX = int(floor(len(data[0])/SEGMENT_COUNT_X));
-	segmentSizeY = int(floor(len(data[0][0])/SEGMENT_COUNT_Y));
+	segmentSizeX = int(floor(len(data[0])/const.SEGMENT_COUNT_X));
+	segmentSizeY = int(floor(len(data[0][0])/const.SEGMENT_COUNT_Y));
 	remainderX = len(data[0])%segmentSizeX
 	remainderY = len(data[0][0])%segmentSizeY
 	
@@ -84,7 +79,7 @@ def ExtractFeaturesFromFile(data, bins):
 def BuildHistogramBins():
 	files = rd.GetFileNames(const.Precomputed_Train_Directory, 'pkl');
 	input = joblib.load(files[0]);
-	histogram = np.histogram(input[0], bins=1000);
+	histogram = np.histogram(input[0], bins=const.NUMBER_OF_BINS);
 	trimmedBins = []
 	for h in zip(histogram[0], histogram[1]):
 		# Remove outliers
