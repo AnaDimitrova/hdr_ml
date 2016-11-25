@@ -1,7 +1,7 @@
 import os
 import numpy as np
 import nibabel as nib
-import Constants as const
+import src.Constants as const
 import re
 
 from nibabel.testing import data_path

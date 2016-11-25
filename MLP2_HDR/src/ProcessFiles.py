@@ -6,9 +6,9 @@ from numpy import *
 from nibabel.testing import data_path
 from sklearn.externals import joblib
 
-import ReadData as rd
-import Constants as const
-import ProcessData as pd
+import src.ReadData as rd
+import src.Constants as const
+import src.ProcessData as pd
 
 # Remove first and last few slices from each nii file as they contain mostly black dots.
 def RemoveMarginalSplits(data):

@@ -3,7 +3,7 @@ import nibabel as nib
 import numpy as np
 
 from sklearn.externals import joblib
-import Constants as const
+import src.Constants as const
 
 # Apply a given mask to the image data
 def applyMask(imageData, mask):

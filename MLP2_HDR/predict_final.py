@@ -8,8 +8,8 @@ from sklearn.metrics import log_loss
 from math import log
 from sklearn.pipeline import make_pipeline
 
-import Constants as const
-import ProcessFiles as sp
+import src.Constants as const
+import src.ProcessFiles as sp
 
 #######################################################
 # 					Important!						  #		
