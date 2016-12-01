@@ -27,6 +27,7 @@ def ProcessFiles(filesLocation, outputDirectory, preprocess):
 		os.makedirs(outputDirectory)
 
 	files = rd.GetFileNames(filesLocation);
+	
 	if(not preprocess and len(files) == 0):
 		print(bcolors.WARNING + "Warning: You should first create the files by changing varibales Preprocess_Train_Files." + bcolors.ENDC)
 
