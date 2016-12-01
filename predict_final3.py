@@ -1,6 +1,7 @@
 import os
 import numpy as np
 from sklearn.linear_model import LassoCV
+from sklearn.linear_model import RidgeCV
 
 from sklearn.feature_selection import SelectKBest
 from sklearn.feature_selection import f_regression
@@ -43,28 +44,37 @@ sp.ProcessFiles(const.Test_Data_Path, const.Precomputed_Test_Directory, Preproce
 print("4. Processing features for test input data.")
 testInput = sp.ExtractFeaturesFromAllFiles(const.Precomputed_Test_Directory, const.Preprocessed_Test_Features_File, bins, Preprocess_Test_Features)
 
-def ExecuteLearning(input, output, testInput, value):
+def ExecuteLearning(input, output, testInput):
 	features = SelectKBest(f_regression, k=const.Number_Of_Features_Project2).fit(input, output);
 	input = features.transform(input)
-	reg = LassoCV(normalize=True, max_iter=10000, cv=20, n_alphas=10000)
+	reg = RidgeCV(normalize=True, cv=10)
 	reg.fit(input, output)
 
 	testInputTransformed = features.transform(testInput)
 	predictions = reg.predict(testInputTransformed)
-	createPrediction
-	return createPrediction(predictions, value);
+	testInputTransformed = features.transform(testInput)
+	predictions = reg.predict(testInputTransformed)
+	return predictions;
 
-def createPrediction(result, value):
-	result = result >= 0.5
+def createPrediction(result, value, middle):
+	result = result >= middle
 	return np.c_[np.arange(0,const.TEST_SAMPLES), [value] * const.TEST_SAMPLES, result]
 
 genderOutput = output[:,0]; # male (0) / female (1)
 ageOutput = output[:,1]; #  young (1) / old (0)
 healthOutput = output[:,2]; # sick (0) / healthy (1)
 
-predictionsGender = ExecuteLearning(input, genderOutput, testInput, "gender");
-predictionsAge = ExecuteLearning(input, ageOutput, testInput, "age");
-predictionsHealth = ExecuteLearning(input, healthOutput, testInput, "health");
+print("5. Learn Gender.")
+genderResult = ExecuteLearning(input, genderOutput, testInput);
+print("6. Learn Age.")
+ageResult = ExecuteLearning(input, ageOutput, testInput);
+print("7. Learn Health.")
+healthResult = ExecuteLearning(input, healthOutput, testInput);
+
+print("8. Fix Predictions.")
+predictionsGender = createPrediction(genderResult, "gender",0.5); 
+predictionsAge  = createPrediction(ageResult, "age", 0.5);
+predictionsHealth = createPrediction(healthResult, "health", 0.5); 
 
 predictions = np.empty((const.TEST_SAMPLES * 3, 4), dtype="<U21")
 predictions[0::3, 1:4] = predictionsGender
