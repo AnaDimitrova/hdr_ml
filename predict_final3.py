@@ -23,8 +23,8 @@ import ProcessFiles as sp
 #######################################################
 Preprocess_Train_Files = False
 Preprocess_Train_Features = False
-Preprocess_Test_Files = True
-Preprocess_Test_Features = True
+Preprocess_Test_Files = False
+Preprocess_Test_Features = False
 #######################################################
 
 # LEARN  
@@ -34,56 +34,47 @@ sp.ProcessFiles(const.Train_Data_Path, const.Precomputed_Train_Directory, Prepro
 print("2. Read or find features.")
 bins = sp.BuildHistogramBins();
 input = sp.ExtractFeaturesFromAllFiles(const.Precomputed_Train_Directory, const.Preprocessed_Train_Features_File, bins, Preprocess_Train_Features)
-
 #Get training output
 output = np.genfromtxt(const.Train_Target_File_Path, delimiter=',')
 
-genderOutput = output[:,0]; # male (0) / female (1)
-ageOutput = output[:,0]; #  young (1) / old (0)
-healthOutput = output[:,0]; # sick (0) / healthy (1)
-
-# Pick the best k features and adjust model
-print("3. Selecting best features.")
-featuresGender = SelectKBest(f_regression, k=const.Number_Of_Features_Project2).fit(input, genderOutput);
-featuresAge = SelectKBest(f_regression, k=const.Number_Of_Features_Project2).fit(input, ageOutput);
-featuresHealth = SelectKBest(f_regression, k=const.Number_Of_Features_Project2).fit(input, healthOutput);
-
-print("4. Transforming input to selected features.")
-genderInput = featuresGender.transform(input)
-ageInput = featuresAge.transform(input)
-healthInput = featuresHealth.transform(input)
-
-print("5. Fitting model.")
-# Fit the linear mode with ridge regression including cross-validation with 20 folds
-reg = LassoCV(normalize=True, max_iter=10000, cv=20, n_alphas=10000)
-reg.fit(genderInput, genderOutput)
-
-# # Check score
-# # Score doesn't really mean much at the moment.
-# print("Score: ", log_loss(output, reg.predict(input)))
-
-# Read test input data
-print("6. Starting reading test input data.")
+print("3. Reading test input data.")
 sp.ProcessFiles(const.Test_Data_Path, const.Precomputed_Test_Directory, Preprocess_Test_Files)
 
-print("7. Starting processing features for test input data.")
+print("4. Processing features for test input data.")
 testInput = sp.ExtractFeaturesFromAllFiles(const.Precomputed_Test_Directory, const.Preprocessed_Test_Features_File, bins, Preprocess_Test_Features)
 
-print("8. Transform test input to best features.")
-testInputTransformed = features.transform(testInput)
+def ExecuteLearning(input, output, testInput, value):
+	features = SelectKBest(f_regression, k=const.Number_Of_Features_Project2).fit(input, output);
+	input = features.transform(input)
+	reg = LassoCV(normalize=True, max_iter=10000, cv=20, n_alphas=10000)
+	reg.fit(input, output)
 
-# print("9. Starting predicting test data.")
-predictions = reg.predict(testInputTransformed)
-predictions = np.maximum(predictions, const.RESULT_MIN_VALUE)
-predictions = np.minimum(predictions, const.RESULT_MAX_VALUE)
+	testInputTransformed = features.transform(testInput)
+	predictions = reg.predict(testInputTransformed)
+	createPrediction
+	return createPrediction(predictions, value);
 
-predictions[predictions>0.8]=0.97
-predictions[predictions<0.2]=0.07
+def createPrediction(result, value):
+	result = result >= 0.5
+	return np.c_[np.arange(0,const.TEST_SAMPLES), [value] * const.TEST_SAMPLES, result]
 
-#Format and save predictions as CSV
-predictions = np.c_[np.arange(1,const.TEST_SAMPLES + 1), predictions]
-np.savetxt(const.Test_Target_File_Path, predictions, delimiter=",", fmt="%i,%f", header="ID,Prediction", comments="")
-print ("10. Result printed at '%s'." %(const.Test_Target_File_Path))
+genderOutput = output[:,0]; # male (0) / female (1)
+ageOutput = output[:,1]; #  young (1) / old (0)
+healthOutput = output[:,2]; # sick (0) / healthy (1)
+
+predictionsGender = ExecuteLearning(input, genderOutput, testInput, "gender");
+predictionsAge = ExecuteLearning(input, ageOutput, testInput, "age");
+predictionsHealth = ExecuteLearning(input, healthOutput, testInput, "health");
+
+predictions = np.empty((const.TEST_SAMPLES * 3, 4), dtype="<U21")
+predictions[0::3, 1:4] = predictionsGender
+predictions[1::3, 1:4] = predictionsAge
+predictions[2::3, 1:4] = predictionsHealth
+
+predictions[:,0] = np.arange(0, const.TEST_SAMPLES * 3)
+
+np.savetxt(const.Test_Target_File_Path, predictions, delimiter=",", fmt="%s", header="ID,Sample,Label,Predicted", comments="")
+print ("Result printed at '%s'." %(const.Test_Target_File_Path))
 
 
 
