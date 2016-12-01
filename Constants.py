@@ -59,7 +59,10 @@ NUMBER_OF_BINS = 1000
 # Number was assembled based on comparison 
 # between squared error on the different feature number
 Number_Of_Features_Project1 = 355000
-Number_Of_Features_Project2 = 100
+Number_Of_Features_Project2 = 50
+Number_Of_Features_Project3_Age = 50
+Number_Of_Features_Project3_Health = 50
+Number_Of_Features_Project3_Gender = 25
 
 Precomputed_Directory = Data_Location + '/PrecomputedData/'
 Precomputed_Train_Directory = Precomputed_Directory + '/Train/'

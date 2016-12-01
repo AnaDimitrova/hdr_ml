@@ -44,10 +44,11 @@ sp.ProcessFiles(const.Test_Data_Path, const.Precomputed_Test_Directory, Preproce
 print("4. Processing features for test input data.")
 testInput = sp.ExtractFeaturesFromAllFiles(const.Precomputed_Test_Directory, const.Preprocessed_Test_Features_File, bins, Preprocess_Test_Features)
 
-def ExecuteLearning(input, output, testInput):
-	features = SelectKBest(f_regression, k=const.Number_Of_Features_Project2).fit(input, output);
+
+def ExecuteLearningHealth(input, output, testInput):
+	features = SelectKBest(f_regression, k=const.Number_Of_Features_Project3_Health).fit(input, output);
 	input = features.transform(input)
-	reg = RidgeCV(normalize=True, cv=10)
+	reg = LassoCV(normalize=True, max_iter=10000, cv=20, n_alphas=10000)
 	reg.fit(input, output)
 
 	testInputTransformed = features.transform(testInput)
@@ -55,6 +56,31 @@ def ExecuteLearning(input, output, testInput):
 	testInputTransformed = features.transform(testInput)
 	predictions = reg.predict(testInputTransformed)
 	return predictions;
+
+def ExecuteLearningAge(input, output, testInput):
+	features = SelectKBest(f_regression, k=const.Number_Of_Features_Project3_Age).fit(input, output);
+	input = features.transform(input)
+	reg = LassoCV(normalize=True, max_iter=10000, cv=20, n_alphas=10000)
+	reg.fit(input, output)
+
+	testInputTransformed = features.transform(testInput)
+	predictions = reg.predict(testInputTransformed)
+	testInputTransformed = features.transform(testInput)
+	predictions = reg.predict(testInputTransformed)
+	return predictions;
+
+def ExecuteLearningGender(input, output, testInput):
+	features = SelectKBest(f_regression, k=const.Number_Of_Features_Project3_Gender).fit(input, output);
+	input = features.transform(input)
+	reg = LassoCV(normalize=True, max_iter=10000, cv=20, n_alphas=10000)
+	reg.fit(input, output)
+
+	testInputTransformed = features.transform(testInput)
+	predictions = reg.predict(testInputTransformed)
+	testInputTransformed = features.transform(testInput)
+	predictions = reg.predict(testInputTransformed)
+	return predictions;
+
 
 def createPrediction(result, value, middle):
 	result = result >= middle
@@ -65,11 +91,11 @@ ageOutput = output[:,1]; #  young (1) / old (0)
 healthOutput = output[:,2]; # sick (0) / healthy (1)
 
 print("5. Learn Gender.")
-genderResult = ExecuteLearning(input, genderOutput, testInput);
+genderResult = ExecuteLearningGender(input, genderOutput, testInput);
 print("6. Learn Age.")
-ageResult = ExecuteLearning(input, ageOutput, testInput);
+ageResult = ExecuteLearningAge(input, ageOutput, testInput);
 print("7. Learn Health.")
-healthResult = ExecuteLearning(input, healthOutput, testInput);
+healthResult = ExecuteLearningHealth(input, healthOutput, testInput);
 
 print("8. Fix Predictions.")
 predictionsGender = createPrediction(genderResult, "gender",0.5); 
