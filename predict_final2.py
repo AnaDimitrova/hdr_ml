@@ -21,10 +21,10 @@ import ProcessFiles as sp
 # Note: Preprocessing the features is actually a slow #
 # process so be mindful when you want to do that!	  #
 #######################################################
-Preprocess_Train_Files = True
-Preprocess_Train_Features = True
-Preprocess_Test_Files = True
-Preprocess_Test_Features = True
+Preprocess_Train_Files = False
+Preprocess_Train_Features = False
+Preprocess_Test_Files = False
+Preprocess_Test_Features = False
 #######################################################
 
 # LEARN  
@@ -68,6 +68,9 @@ print("9. Starting predicting test data.")
 predictions = reg.predict(testInputTransformed)
 predictions = np.maximum(predictions, const.RESULT_MIN_VALUE)
 predictions = np.minimum(predictions, const.RESULT_MAX_VALUE)
+
+predictions[predictions>0.8]=0.97
+predictions[predictions<0.2]=0.07
 
 #Format and save predictions as CSV
 predictions = np.c_[np.arange(1,const.TEST_SAMPLES + 1), predictions]

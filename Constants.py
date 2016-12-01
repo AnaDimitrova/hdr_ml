@@ -38,8 +38,8 @@ TEST_SAMPLES = 138
 
 # Project 2 
 # Make sure we don't have any 1s and 0s as results for the project.
-RESULT_MIN_VALUE = 0.01;
-RESULT_MAX_VALUE = 0.99;
+RESULT_MIN_VALUE = 0.001;
+RESULT_MAX_VALUE = 0.999;
 
 # Project 1 
 # RESULT_MIN_VALUE = 18;
