@@ -89,15 +89,7 @@ def ExecuteLearningGender(input, output, testInput):
 								  data, const.TRAIN_SAMPLES, mask)
 	print("Finished reading train input data.")
 
-	print("5.2. Doing PCA analysis...")
-	pca = pd.usePrecomputedData(const.PCA_Analysis_File, lambda input: PCA(n_components=150).fit(input), input)
-	print("Finished PCA analysis")
-
-	print("5.3. Transforming input to selected features...")
-	input = pca.transform(input)
-	print("Finished transforming input")
-
-	print("5.4. Fitting model...")
+	print("5.2. Fitting model...")
 	features = SelectKBest(f_regression, k=const.Number_Of_Features_Project3_Gender).fit(input, output);
 
 	input = features.transform(input)
@@ -109,13 +101,12 @@ def ExecuteLearningGender(input, output, testInput):
 	predictionsOnTrainingData =  reg.predict(input) >= 0.5
 	print("Gender accuracy: {}".format(accuracy_score(predictionsOnTrainingData, output)) )
 
-	print("5.5. Starting reading and transforming test input data...")
+	print("5.3. Starting reading and transforming test input data...")
 	testData = rd.GetAllFiles(const.Test_Data_Path)
 	testInput = pd.usePrecomputedData(const.Preprocessed_Test_Input_File,
 									  lambda data, testSamples, mask: pd.transformInputForRegression(data, testSamples,
 																									 mask),
 									  testData, const.TEST_SAMPLES, mask)
-	testInput = pca.transform(testInput)
 	testInputTransformed = features.transform(testInput)
 	print("Finished reading and transforming train input data")
 

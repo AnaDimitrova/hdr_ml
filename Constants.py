@@ -62,7 +62,7 @@ Number_Of_Features_Project1 = 355000
 Number_Of_Features_Project2 = 50
 Number_Of_Features_Project3_Age = 40
 Number_Of_Features_Project3_Health = 100
-Number_Of_Features_Project3_Gender = 10
+Number_Of_Features_Project3_Gender = 240000
 
 Precomputed_Directory = Data_Location + '/PrecomputedData/'
 Precomputed_Train_Directory = Precomputed_Directory + '/Train/'
